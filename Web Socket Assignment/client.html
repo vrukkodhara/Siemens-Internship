@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h2>WebSocket Client</h2>
+
+    <!-- Input fields to be filled with JSON data -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <br>
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age">
+    <br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email">
+    <br>
+    <br>
+
+    <!-- Button to send input field data to server -->
+    <button onclick="sendData()">Send Data</button>
+
+    <script>
+      const socket = new WebSocket('ws://localhost:3000');
+
+      socket.addEventListener('open', function(event) {
+        console.log('Connected to WebSocket server');
+      });
+
+      function sendData() {
+        // Get values from input fields
+        const name = document.getElementById('name').value;
+        const age = document.getElementById('age').value;
+        const email = document.getElementById('email').value;
+
+        // Create JSON object
+        const data = {
+          name: name,
+          age: age,
+          email: email
+        };
+
+        // Convert JSON object to string and send it to server
+        socket.send(JSON.stringify(data));
+      }
+
+      socket.addEventListener('message', function(event) {
+        console.log('Received JSON data from server:', event.data);
+
+        // Parse JSON data received from server
+        const responseData = JSON.parse(event.data);
+
+        // Fill input fields with received JSON data
+        document.getElementById('name').value = responseData.name || '';
+        document.getElementById('age').value = responseData.age || '';
+        document.getElementById('email').value = responseData.email || '';
+      });
+    </script>
+</body>
+</html>
